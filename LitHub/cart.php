@@ -17,8 +17,7 @@ if (isset($_GET['add'])) {
     $check = $conn->query("SELECT * FROM cart WHERE book_id = $book_id AND session_id = '$session'");
 
     if ($check->num_rows > 0) {
-        $conn->query("UPDATE cart SET quantity = quanity + 1 WHERE book_id = $book_id AND session_id = '$session'");
-
+        $conn->query("UPDATE cart SET quantity = quantity + 1 WHERE book_id = $book_id AND session_id = '$session'");
     } else {
         $conn->query("INSERT INTO cart (user_id, book_id, quantity, session_id) VALUES (1, $book_id, 1, '$session')");
     }
@@ -36,14 +35,16 @@ if (isset($_GET['remove'])) {
 
 // Update product quantity
 if (isset($_POST['update_quantity'])) {
-    $cart_id = $_POST['cart_id'];
-    $new_quantity = (int)$_POST['quantity']; // Inject style to not getting SQL injection error
+    foreach ($_POST['quantity'] as $cart_id => $new_quantity) {
+        $cart_id = (int)$cart_id;
+        $new_quantity = (int)$new_quantity; // Prevent SQL injection
 
-    if ($new_quantity > 0) {
-        $conn->query("UPDATE cart SET quantity = $new_quantity WHERE id = $cart_id");
-    } else {
-        // If product quantity is 0 or lower, that product will be removed from cart
-        $conn->query("DELETE FROM cart WHERE id = $cart_id");
+        if ($new_quantity > 0) {
+            $sql = "UPDATE cart SET quantity = $new_quantity WHERE id = $cart_id";
+            $conn->query($sql);
+        } else {
+            $conn->query("DELETE FROM cart WHERE id = $cart_id"); // Remove if 0
+        }
     }
     header("Location: cart.php");
     exit();
@@ -55,15 +56,13 @@ $result = $conn->query("SELECT cart.id, books.title, books.price, cart.quantity
                         WHERE cart.session_id= '$session'");
 
 echo "<h2>My Cart</h2>";
-
 echo "<form method='POST' action='cart.php'>";
 while ($row = $result->fetch_assoc()) {
     echo "<p>{$row['title']} - {$row['price']} x 
-    <input type='number' name='quantity' value='{$row['quantity']}' min='1' style='width:50px'>
-    <input type='hidden' name='cart_id' value='{$row['id']}'>
-    <button type='submit' name='update_quantity'>Update</button>
-    <a href='cart.php?remove={$row['id']}'>Remove</a></p>";
+    <input type='number' name='quantity[{$row['id']}]' value='{$row['quantity']}' min='1' style='width:50px'>
+    <a href='cart.php?remove={$row['id']}'>Remove</a></p>";    
 }
+echo "<button type='submit' name='update_quantity'>Update Cart</button>";
 echo "</form>"
 
 ?>

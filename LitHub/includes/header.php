@@ -1,3 +1,6 @@
+<?php 
+    include 'config.php';
+?>
 <style>
     /* Header Styling */
     header {
@@ -32,14 +35,15 @@
 <header>
     <h1>LitHub Books</h1>
     <nav>
-        <a href="index.php">Home</a> |
-        <a href="profile.php">Profile</a> |
-        <a href="cart.php">Cart</a> |
+        <a href="<?php echo BASE_URL ?>/index.php">Home</a> |
+        <a href="<?php echo BASE_URL ?>/profile.php">Profile</a> |
+        <a href="<?php echo BASE_URL ?>/cart.php">Cart</a> |
         <?php 
-            if(!isset($_SESSION['user_id'])) {
-                echo "<a href='login.php'>Login</a> | <a href='register.php'>Register</a>";
-            } else {
-                echo "<a href='logout.php'>Logout</a>";
+            if(!isset($_SESSION['user_id'])) {            
+                echo "<a href='" . BASE_URL . "/login.php'>Login</a> | <a href='" . BASE_URL . "/register.php'>Register</a>";
+            } else {                
+                echo "<a href='" . BASE_URL . "/admin/index.php'>Admin</a> | ";
+                echo "<a href='" . BASE_URL . "/logout.php'>Logout</a>";
             }
         ?>        
     </nav>

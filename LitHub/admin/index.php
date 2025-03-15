@@ -1,20 +1,23 @@
 <?php
-include '../db.php';
 session_start();
+include '../db.php';
+include '../includes/header.php';
 
-// Check if the admin account is logged in
-if (!isset($_SESSION['admin_id'])) {
-    header("Location: login.php");
+// Ommitting admin access for non-admin users
+if (!isset($_SESSION['user_id']) || $_SESSION["role"] !== "admin") {
+    header("Location: ../denied.php");
     exit();
 }
 
 // Fetch books
 $result = $conn->query("SELECT * FROM books");
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
     <title>Admin Panel</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <h1>Admin Dashboard</h1>
@@ -37,36 +40,3 @@ $result = $conn->query("SELECT * FROM books");
     </table>
 </body>
 </html>
-Add new book (admin/add_book.php)
-<?php
-include '../db.php';
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $title = $_POST['title'];
-    $author = $_POST['author'];
-    $price = $_POST['price'];
-    $image = $_POST['image'];
-
-    $conn->query("INSERT INTO books (title, author, price, image) VALUES ('$title', '$author', '$price', '$image')");
-    header("Location: index.php");
-}
-?>
-
-<form method="POST">
-    <input type="text" name="title" placeholder="Title" required>
-    <input type="text" name="author" placeholder="Author" required>
-    <input type="number" step="0.01" name="price" placeholder="Price" required>
-    <input type="text" name="image" placeholder="Image Filename (e.g., book1.jpg)" required>
-    <button type="submit">Add new book</button>
-</form>
-Delete Book (admin/delete_book.php)
-<?php
-include '../db.php';
-
-if (isset($_GET['id'])) {
-    $id = $_GET['id'];
-    $conn->query("DELETE FROM books WHERE id=$id");
-}
-
-header("Location: index.php");
-?>

@@ -1,5 +1,7 @@
 <?php
-include '..db.php';
+session_start();
+include '../db.php';
+include '../includes/header.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $title = $_POST['title'];
@@ -12,10 +14,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Add Book</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h2>Add Book</h2>
 <form method="POST">
     <input type="text" name="title" placeholder="Title" required>
     <input type="text" name="author" placeholder="Author" required>
     <input type="number" step="0.01" name="price" placeholder="Price" required>
     <input type="text" name="image" placeholder="Image Filename (e.g., book1.jpg)" required>
     <button type="submit">Add Book</button>
-</form>
+</form>    
+</body>
+</html>
+
